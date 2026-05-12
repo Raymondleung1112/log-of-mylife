@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+build/
+dist/
+out/
+
+# Secrets (CRITICAL)
+.env
+.env.local
+*.json
+!package.json
+!tsconfig.json
+.firebase/
+
+# OS files
+.DS_Store
+Thumbs.db
