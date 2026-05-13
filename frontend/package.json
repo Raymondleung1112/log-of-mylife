@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "firebase-tools": "^15.17.0"
+  },
+  "scripts": {
+    "build": "mkdir -p out && echo '<h1>Log of Mylife - Frontend 地基已完工</h1>' > out/index.html"
   }
 }
