@@ -40,8 +40,8 @@ jobs:
           service: backend-api
           region: ${{ vars.GCP_REGION }}
           image: asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }}
-          # 關鍵修正：指定 Cloud Run 運行身份
-          service_account: log-of-mylife-backend@gcp-hk-sandbox.iam.gserviceaccount.com
+          # 透過 flags 參數強制注入 service-account 設定，解決縮排或 Action 版本解析問題
+          flags: '--service-account=log-of-mylife-backend@gcp-hk-sandbox.iam.gserviceaccount.com'
           env_vars: |
             PROJECT_ID=${{ vars.GCP_PROJECT_ID }}
             FIRESTORE_DATABASE_ID=log-of-mylife-db
