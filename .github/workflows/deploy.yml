@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'backend/**'
+      - 'backend/**' # 僅當後端代碼或 Dockerfile 變動時觸發
 
 permissions:
   contents: 'read'
-  id-token: 'write'
+  id-token: 'write' # WIF 鑑權必備
 
 jobs:
   deploy:
@@ -40,6 +40,8 @@ jobs:
           service: backend-api
           region: ${{ vars.GCP_REGION }}
           image: asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }}
+          # 關鍵修正：指定 Cloud Run 運行身份
+          service_account: log-of-mylife-backend@gcp-hk-sandbox.iam.gserviceaccount.com
           env_vars: |
             PROJECT_ID=${{ vars.GCP_PROJECT_ID }}
             FIRESTORE_DATABASE_ID=log-of-mylife-db
