@@ -11,13 +11,18 @@ build/
 dist/
 out/
 
-# Secrets (CRITICAL)
+# Secrets & Configs (絕對不能上傳)
 .env
 .env.local
+.firebase/
+
+# JSON Logic (順序極其重要：先擋掉全部，再開放特定的)
 *.json
 !package.json
+!package-lock.json
 !tsconfig.json
-.firebase/
+!skills-lock.json
+!firebase.json
 
 # OS files
 .DS_Store
