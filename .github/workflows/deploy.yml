@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'backend/**' # 僅當後端代碼或 Dockerfile 變動時觸發
+      - 'backend/**' # 確保只有後端變動才觸發，節省 GitHub Actions 額度
 
 permissions:
   contents: 'read'
-  id-token: 'write' # WIF 鑑權必備
+  id-token: 'write' # WIF 鑑權核心權限
 
 jobs:
   deploy:
@@ -40,8 +40,8 @@ jobs:
           service: backend-api
           region: ${{ vars.GCP_REGION }}
           image: asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }}
-          # 透過 flags 參數強制注入 service-account 設定，解決縮排或 Action 版本解析問題
-          flags: '--service-account=log-of-mylife-backend@gcp-hk-sandbox.iam.gserviceaccount.com'
+          # 關鍵修正：指定 Cloud Run 運行身份
+          service_account: log-of-mylife-backend@gcp-hk-sandbox.iam.gserviceaccount.com
           env_vars: |
             PROJECT_ID=${{ vars.GCP_PROJECT_ID }}
             FIRESTORE_DATABASE_ID=log-of-mylife-db
