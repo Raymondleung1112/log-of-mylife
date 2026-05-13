@@ -1,0 +1,45 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ vars.GCP_WIF_PROVIDER }}'
+          service_account: '${{ vars.GCP_SERVICE_ACCOUNT }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker
+        run: gcloud auth configure-docker asia-east2-docker.pkg.dev
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }} ./backend
+          docker push asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: backend-api
+          region: ${{ vars.GCP_REGION }}
+          image: asia-east2-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/log-of-mylife-repo/backend:${{ github.sha }}
+          env_vars: |
+            PROJECT_ID=${{ vars.GCP_PROJECT_ID }}
+            FIRESTORE_DATABASE_ID=log-of-mylife-db
